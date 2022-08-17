@@ -26,17 +26,24 @@ class MarkovMachine {
    *
    * */
 
-  getChains(words) {
+
+
+
+   getChains(words) {
     let chain = new Map();
 
-    for (let i = 0; i < words.length; i++) {
-      chain.set(words[i], words[i+1])
-    }
+    for (let i = 0; i < words.length; i++){
+      if (!chain.get(words[i])) {
+        chain.set(words[i],[words[i + 1]]);
+      } else {
+        chain.get(words[i]).push(words[i +1])
+      }
 
-    chain.set(words[words.length-1], null)
 
-    return chain;
-  }
+      }
+      return chain;
+   }
+
 
 
   /** Return random text from chains, starting at the first word and continuing
@@ -49,26 +56,36 @@ class MarkovMachine {
     // - find a random word from the following-words of that
     // - repeat until reaching the terminal null
 
-    let [firstWord] = words.key();
-    let markovText = firstWord;
+    let [currentWord] = chains.keys();
+    let markovText = "";
 
-    let nextWord = chains.get(firstWord) //find the values of first word
-    let random = Math.floor(Math.random() * nextWord.length) //find length of the values
-    nextWord[random] // pick (random value)
+    let nextWord = chains.get(currentWord); //find the values of first word
+    let random = Math.floor(Math.random() * nextWord.length); //find length of the values
+    let randomChoice = nextWord[random]; // pick (random value)
 
 
 
     //find the values of the (random value)
 
-
-    for (let i = chains.length -1; i >= 0; i--) {
-      let random = Math.floor(Math.random() * chains.length);
-        if (chains[random] === null) {
-          return markovText;
-        } else {
-        markovText += chains[random];
-        }
-    }
-    return markovText;
+  while (currentWord !== null){
+      markovText += currentWord;
+      currentWord = randomChoice;
+      nextWord = chains.get(currentWord);
+      random = Math.floor(Math.random() * nextWord.length);
+      randomChoice = nextWord[random];
   }
-}
+
+  return markovText;
+  }
+
+//     for (let i = chains.length -1; i >= 0; i--) {
+//       let random = Math.floor(Math.random() * chains.length);
+//         if (chains[random] === null) {
+//           return markovText;
+//         } else {
+//         markovText += chains[random];
+//         }
+//     }
+//     return markovText;
+//   }
+// }
